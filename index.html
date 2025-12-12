@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SQL Execution: Employee Salaries</title>
+    <title>SQL Execution Visualizer</title>
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -14,75 +14,101 @@
                 extend: {
                     colors: {
                         slate: {
-                            850: '#1e293b', // Custom dark shade
+                            850: '#1e293b', 
+                            900: '#0f172a',
                             950: '#020617',
                         },
                         indigo: {
                             450: '#6366f1',
+                            550: '#4f46e5',
                         }
                     },
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
                         mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -2px rgba(99, 102, 241, 0.1)',
+                        'glow': '0 0 20px rgba(99, 102, 241, 0.15)',
+                        'card': '0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025)',
+                    },
+                    backgroundImage: {
+                        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+                        'hero-gradient': 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)',
+                        'card-gradient': 'linear-gradient(to right bottom, #ffffff, #f8fafc)',
                     }
                 }
             }
         }
     </script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700;800&display=swap');
         
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #0f172a;
-            color: #f1f5f9;
+            background-color: #f8fafc;
+            color: #0f172a;
         }
 
-        /* Smooth transitions */
-        .fade-enter { opacity: 0; transform: translateY(10px); }
-        .fade-enter-active { opacity: 1; transform: translateY(0); transition: opacity 300ms, transform 300ms; }
-        .fade-exit { opacity: 1; transform: translateY(0); }
-        .fade-exit-active { opacity: 0; transform: translateY(-10px); transition: opacity 300ms, transform 300ms; }
+        /* Animations */
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.98) translateY(10px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
 
-        .row-animate { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .animate-enter {
+            animation: fadeInScale 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .row-transition {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Gradient Borders */
+        .gradient-border-card {
+            position: relative;
+            background: #fff;
+            background-clip: padding-box;
+            border: 1px solid transparent;
+            border-radius: 1rem;
+        }
+        .gradient-border-card::before {
+            content: '';
+            position: absolute;
+            top: 0; right: 0; bottom: 0; left: 0;
+            z-index: -1;
+            margin: -1px;
+            border-radius: inherit;
+            background: linear-gradient(to right bottom, #e2e8f0, #ffffff);
+        }
         
-        .strike-through {
-            text-decoration: line-through;
-            opacity: 0.5;
-            background-color: rgba(220, 38, 38, 0.1) !important;
-            color: #f87171 !important;
+        /* Text Gradients */
+        .text-gradient {
+            background: linear-gradient(135deg, #4f46e5 0%, #9333ea 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .highlight-row {
-            background-color: rgba(30, 58, 138, 0.6) !important;
-            border-left: 4px solid #60a5fa;
-        }
+        .status-badge { transition: all 0.3s ease; }
 
-        .dim-row { opacity: 0.25; filter: grayscale(100%); }
-
-        /* Glassmorphism utilities */
-        .glass-panel {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(148, 163, 184, 0.1);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        }
-
-        .glass-header {
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(8px);
-            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
-        }
-
-        /* Custom Scrollbar */
+        /* Custom Scrollbar for Code */
         .custom-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
         .custom-scroll::-webkit-scrollbar-track { background: transparent; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #475569; border-radius: 99px; }
-        .custom-scroll::-webkit-scrollbar-thumb:hover { background: #64748b; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+        .custom-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        /* Table Styles */
+        .table-row-hover:hover {
+            background-color: #f8fafc;
+            transform: scale-[1.005];
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            z-index: 10;
+            position: relative;
+        }
     </style>
 </head>
-<body class="bg-slate-950 min-h-screen selection:bg-indigo-500/30 selection:text-indigo-200">
-    <div id="root"></div>
+<body class="bg-slate-50 min-h-screen selection:bg-indigo-100 selection:text-indigo-900 flex flex-col">
+    <div id="root" class="flex-1 flex flex-col"></div>
 
     <script type="text/babel">
         const { useState, useMemo, useEffect } = React;
@@ -94,20 +120,35 @@
             </svg>
         );
 
-        const icons = {
-            database: <Icon path={<><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></>} />,
-            filter: <Icon path={<polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>} />,
-            group: <Icon path={<><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></>} />,
-            calculator: <Icon path={<><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="16" y1="14" x2="16" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/></>} />,
-            sort: <Icon path={<><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></>} />,
-            scissors: <Icon path={<><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></>} />,
-            chevronRight: <Icon path={<polyline points="9 18 15 12 9 6"/>} />,
-            chevronLeft: <Icon path={<polyline points="15 18 9 12 15 6"/>} />,
-            info: <Icon path={<><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></>} />,
-            check: <Icon path={<polyline points="20 6 9 17 4 12"/>} className="w-4 h-4" />
+        const paths = {
+            database: <><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></>,
+            filter: <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>,
+            group: <><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></>,
+            calculator: <><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="16" y1="14" x2="16" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/></>,
+            sort: <><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></>,
+            scissors: <><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></>,
+            chevronRight: <polyline points="9 18 15 12 9 6"/>,
+            chevronLeft: <polyline points="15 18 9 12 15 6"/>,
+            info: <><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></>,
+            check: <polyline points="20 6 9 17 4 12"/>,
+            play: <polygon points="5 3 19 12 5 21 5 3"/>
         };
 
-        // --- Data ---
+        const icons = {
+            database: <Icon path={paths.database} />,
+            filter: <Icon path={paths.filter} />,
+            group: <Icon path={paths.group} />,
+            calculator: <Icon path={paths.calculator} />,
+            sort: <Icon path={paths.sort} />,
+            scissors: <Icon path={paths.scissors} />,
+            chevronRight: <Icon path={paths.chevronRight} />,
+            chevronLeft: <Icon path={paths.chevronLeft} />,
+            info: <Icon path={paths.info} />,
+            check: <Icon path={paths.check} className="w-4 h-4" />,
+            play: <Icon path={paths.play} />
+        };
+
+        // --- Demo Data ---
         const departments = [
             { id: 'D1', name: 'Engineering' },
             { id: 'D2', name: 'Sales' },
@@ -127,84 +168,66 @@
         const WHERE_THRESHOLD = 3000;
         const HAVING_THRESHOLD = 5000;
 
-        // --- Steps Configuration ---
-        const steps = [
-            {
-                id: 'init',
-                title: 'Data Sources',
-                subtitle: 'Raw Tables',
-                desc: 'We start with two raw tables: "Employees" and "Departments".',
-                icon: icons.database,
-                queryHighlight: []
-            },
-            {
-                id: 'from_join',
-                title: 'FROM & JOIN',
-                subtitle: 'Merge Tables',
-                desc: 'Data is retrieved from Employees and joined with Departments on matching IDs.',
-                icon: icons.database,
-                queryHighlight: [1, 2, 3]
-            },
-            {
-                id: 'where',
-                title: 'WHERE',
-                subtitle: 'Filter Rows',
-                desc: `Rows with Salary ≤ ${WHERE_THRESHOLD} are removed immediately. David ($2500) is filtered out.`,
-                icon: icons.filter,
-                queryHighlight: [4]
-            },
-            {
-                id: 'group_by',
-                title: 'GROUP BY',
-                subtitle: 'Aggregate Data',
-                desc: 'Remaining rows are grouped by Department Name. We calculate aggregates (AVG Salary) for each group.',
-                icon: icons.group,
-                queryHighlight: [5]
-            },
-            {
-                id: 'having',
-                title: 'HAVING',
-                subtitle: 'Filter Groups',
-                desc: `Groups with AVG Salary ≤ ${HAVING_THRESHOLD} are removed. Marketing avg is too low, so it's removed.`,
-                icon: icons.filter,
-                queryHighlight: [6]
-            },
-            {
-                id: 'select',
-                title: 'SELECT',
-                subtitle: 'Select Columns',
-                desc: 'We finally select the Department Name and the calculated Average Salary.',
-                icon: icons.calculator,
-                queryHighlight: [0]
-            },
-            {
-                id: 'order_by',
-                title: 'ORDER BY',
-                subtitle: 'Sort Results',
-                desc: 'Results are sorted by Average Salary in Descending order.',
-                icon: icons.sort,
-                queryHighlight: [7]
-            },
-            {
-                id: 'limit',
-                title: 'LIMIT',
-                subtitle: 'Trim Results',
-                desc: 'We Skip 0 rows and Take 2 rows. Since only 2 groups remain, both are kept.',
-                icon: icons.scissors,
-                queryHighlight: [8]
-            }
+        // --- Demo Steps Configuration ---
+        // Defined here to be accessible by App
+        const demoSteps = [
+            { id: 'init', title: 'Data Sources', subtitle: 'Raw Tables', desc: 'We start with two raw tables: "Employees" and "Departments".', icon: icons.database, queryHighlight: [], type: 'demo' },
+            { id: 'from_join', title: 'FROM & JOIN', subtitle: 'Merge Tables', desc: 'Data is retrieved from Employees and joined with Departments on matching IDs.', icon: icons.database, queryHighlight: [1, 2, 3], type: 'demo' },
+            { id: 'where', title: 'WHERE', subtitle: 'Filter Rows', desc: `Rows with Salary ≤ ${WHERE_THRESHOLD} are removed immediately. David ($2500) is filtered out.`, icon: icons.filter, queryHighlight: [4], type: 'demo' },
+            { id: 'group_by', title: 'GROUP BY', subtitle: 'Aggregate Data', desc: 'Remaining rows are grouped by Department Name. We calculate aggregates (AVG Salary) for each group.', icon: icons.group, queryHighlight: [5], type: 'demo' },
+            { id: 'having', title: 'HAVING', subtitle: 'Filter Groups', desc: `Groups with AVG Salary ≤ ${HAVING_THRESHOLD} are removed. Marketing avg is too low, so it's removed.`, icon: icons.filter, queryHighlight: [6], type: 'demo' },
+            { id: 'select', title: 'SELECT', subtitle: 'Select Columns', desc: 'We finally select the Department Name and the calculated Average Salary.', icon: icons.calculator, queryHighlight: [0], type: 'demo' },
+            { id: 'order_by', title: 'ORDER BY', subtitle: 'Sort Results', desc: 'Results are sorted by Average Salary in Descending order.', icon: icons.sort, queryHighlight: [7], type: 'demo' },
+            { id: 'limit', title: 'LIMIT', subtitle: 'Trim Results', desc: 'We Skip 0 rows and Take 2 rows. Since only 2 groups remain, both are kept.', icon: icons.scissors, queryHighlight: [8], type: 'demo' }
         ];
 
-        // --- Components ---
+        // --- Helpers ---
+        const getClauseOrder = (clause) => {
+            const order = { 'FROM': 1, 'JOIN': 1.1, 'WHERE': 2, 'GROUP BY': 3, 'HAVING': 4, 'SELECT': 5, 'DISTINCT': 6, 'ORDER BY': 7, 'LIMIT': 8, 'OFFSET': 8.1 };
+            return order[clause.toUpperCase()] || 99;
+        };
+
+        const getClauseDesc = (clause) => {
+            const descs = {
+                'FROM': "Identifies data tables. Always the first logical step.",
+                'JOIN': "Combines tables based on specified conditions.",
+                'WHERE': "Filters individual rows before grouping.",
+                'GROUP BY': "Groups rows sharing values in specified columns.",
+                'HAVING': "Filters groups created by GROUP BY.",
+                'SELECT': "Determines which columns are returned.",
+                'DISTINCT': "Removes duplicate rows.",
+                'ORDER BY': "Sorts the final result set.",
+                'LIMIT': "Restricts the number of rows returned."
+            };
+            return descs[clause.toUpperCase()] || "Executing clause logic.";
+        };
+
+        const getClauseIcon = (clause) => {
+            const map = {
+                'FROM': icons.database,
+                'JOIN': icons.database,
+                'WHERE': icons.filter,
+                'GROUP BY': icons.group,
+                'HAVING': icons.filter,
+                'SELECT': icons.calculator,
+                'ORDER BY': icons.sort,
+                'LIMIT': icons.scissors
+            };
+            return map[clause.toUpperCase()] || icons.info;
+        };
+
+        // --- Visual Components ---
 
         const StepIndicator = ({ currentIdx, total }) => {
             return (
-                <div className="flex items-center gap-1 mb-6">
+                <div className="flex items-center gap-1.5 mb-6 px-1">
                     {Array.from({ length: total }).map((_, idx) => (
                         <div 
                             key={idx}
-                            className={`h-1.5 rounded-full transition-all duration-500 ${
-                                idx <= currentIdx ? 'bg-indigo-500 flex-1' : 'bg-slate-700 w-2'
+                            className={`h-2 rounded-full transition-all duration-500 shadow-sm ${
+                                idx <= currentIdx 
+                                    ? 'bg-hero-gradient w-full flex-1' 
+                                    : 'bg-slate-200 w-2.5'
                             }`}
                         />
                     ))}
@@ -212,42 +235,31 @@
             );
         };
 
-        const CodeDisplay = ({ activeLines }) => {
-            const lines = [
-                { id: 0, text: "SELECT D.name, AVG(E.salary) as avg_sal" },
-                { id: 1, text: "FROM Employees E" },
-                { id: 2, text: "JOIN Departments D" },
-                { id: 3, text: "  ON E.dept_id = D.id" },
-                { id: 4, text: `WHERE E.salary > ${WHERE_THRESHOLD}` },
-                { id: 5, text: "GROUP BY D.name" },
-                { id: 6, text: `HAVING AVG(E.salary) > ${HAVING_THRESHOLD}` },
-                { id: 7, text: "ORDER BY avg_sal DESC" },
-                { id: 8, text: "LIMIT 2 OFFSET 0;" }
-            ];
-
+        const CodeDisplay = ({ lines, activeLines, isCustom }) => {
             return (
-                <div className="glass-panel rounded-xl overflow-hidden flex flex-col h-full shadow-lg border border-slate-700/50">
-                    <div className="glass-header px-4 py-3 flex items-center justify-between">
-                        <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">SQL Query</span>
+                <div className="gradient-border-card h-full shadow-card overflow-hidden flex flex-col">
+                    <div className="bg-slate-900/95 backdrop-blur px-5 py-4 flex items-center justify-between border-b border-slate-800">
+                        <span className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                             <span className={`w-2 h-2 rounded-full shadow-[0_0_10px_currentColor] ${isCustom ? 'text-indigo-400 bg-indigo-400' : 'text-emerald-400 bg-emerald-400'}`}></span>
+                             {isCustom ? 'Custom Query' : 'Demo Query'}
+                        </span>
                         <div className="flex gap-1.5">
-                            <div className="w-2.5 h-2.5 rounded-full bg-red-500/20 border border-red-500/50"></div>
-                            <div className="w-2.5 h-2.5 rounded-full bg-amber-500/20 border border-amber-500/50"></div>
-                            <div className="w-2.5 h-2.5 rounded-full bg-green-500/20 border border-green-500/50"></div>
+                            <div className="w-2.5 h-2.5 rounded-full bg-slate-700"></div>
+                            <div className="w-2.5 h-2.5 rounded-full bg-slate-700"></div>
                         </div>
                     </div>
-                    <div className="p-4 font-mono text-sm overflow-x-auto custom-scroll bg-slate-900/50 flex-1">
+                    <div className="p-5 font-mono text-sm overflow-x-auto custom-scroll bg-[#1e1e1e] flex-1 whitespace-pre-wrap">
                         {lines.map((line, idx) => {
                             const isActive = activeLines.includes(idx);
                             return (
                                 <div 
                                     key={idx} 
-                                    className={`relative flex items-center py-1 transition-all duration-300 rounded ${
-                                        isActive ? 'bg-indigo-500/10 text-indigo-300' : 'text-slate-500'
+                                    className={`relative flex items-center py-1.5 transition-all duration-300 rounded-sm pl-2 mb-1 ${
+                                        isActive ? 'bg-indigo-500/20 shadow-[inset_2px_0_0_#6366f1]' : 'border-l-2 border-transparent hover:bg-white/5'
                                     }`}
                                 >
-                                    {isActive && <div className="absolute left-0 w-0.5 h-full bg-indigo-500 rounded-r"></div>}
-                                    <span className={`w-8 text-right mr-4 text-xs select-none ${isActive ? 'text-indigo-500' : 'text-slate-700'}`}>{idx + 1}</span>
-                                    <span className={`${isActive ? 'font-semibold' : 'opacity-80'}`}>{line.text}</span>
+                                    <span className={`w-6 text-right mr-4 text-xs select-none font-medium ${isActive ? 'text-indigo-400' : 'text-slate-600'}`}>{idx + 1}</span>
+                                    <span className={isActive ? 'text-slate-100 font-medium' : 'text-slate-400'}>{line.text}</span>
                                 </div>
                             )
                         })}
@@ -257,14 +269,14 @@
         };
 
         const TableCard = ({ title, children, headerRight }) => (
-            <div className="glass-panel rounded-xl overflow-hidden flex flex-col h-full animate-in fade-in duration-500">
-                <div className="glass-header px-5 py-3 border-b border-slate-800 flex justify-between items-center">
-                    <h3 className="text-sm font-semibold text-slate-200 uppercase tracking-wide flex items-center gap-2">
+            <div className="gradient-border-card shadow-card flex flex-col h-full animate-enter overflow-hidden w-full">
+                <div className="bg-slate-50/80 backdrop-blur px-6 py-4 flex justify-between items-center border-b border-slate-100">
+                    <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wide flex items-center gap-2">
                         {title}
                     </h3>
                     {headerRight}
                 </div>
-                <div className="overflow-x-auto custom-scroll flex-1">
+                <div className="overflow-x-auto custom-scroll flex-1 bg-white p-1">
                     {children}
                 </div>
             </div>
@@ -272,25 +284,94 @@
 
         const StatusBadge = ({ type }) => {
             const styles = {
-                active: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
-                removed: "bg-red-500/10 text-red-400 border-red-500/20 line-through opacity-70",
-                selected: "bg-indigo-500/10 text-indigo-400 border-indigo-500/20"
+                active: "bg-emerald-50 text-emerald-600 border-emerald-100 ring-1 ring-emerald-500/20",
+                removed: "bg-rose-50 text-rose-500 border-rose-100 line-through opacity-60",
+                selected: "bg-hero-gradient text-white shadow-md shadow-indigo-500/30 border-transparent"
             };
             
-            const labels = {
-                active: "Active",
-                removed: "Removed",
-                selected: "Selected"
-            }
-
             return (
-                <span className={`px-2 py-0.5 rounded text-[10px] font-medium border ${styles[type] || styles.active} uppercase tracking-wider`}>
-                    {labels[type] || type}
+                <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold border ${styles[type] || styles.active} uppercase tracking-wider status-badge`}>
+                    {type}
                 </span>
             );
         }
 
-        const DataVisualizer = ({ stepId }) => {
+        const DataVisualizer = ({ stepId, isCustom, currentStep, customTables }) => {
+            
+            // --- Custom Visualization Logic ---
+            if (isCustom) {
+                // Determine what to show based on step type
+                const stepType = currentStep?.title || '';
+
+                if (stepId === 'init' || stepType === 'FROM' || stepType === 'JOIN') {
+                    // Show detected tables
+                    const tableNames = Object.keys(customTables || {});
+                    if (tableNames.length === 0) return <div className="p-8 text-center text-slate-400">No tables detected yet.</div>;
+                    
+                    return (
+                        <div className={`grid gap-6 h-full ${tableNames.length > 1 ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'}`}>
+                            {tableNames.map(name => {
+                                const tableData = customTables[name];
+                                return (
+                                    <TableCard key={name} title={`${name} (Mock Data)`}>
+                                        <table className="w-full text-sm text-left">
+                                            <thead className="text-xs text-slate-400 font-bold uppercase bg-slate-50/50 sticky top-0 z-10 backdrop-blur-sm">
+                                                <tr>{tableData.columns.map(c => <th key={c} className="px-5 py-3">{c}</th>)}</tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-slate-50">
+                                                {tableData.rows.map((row, i) => (
+                                                    <tr key={i} className="table-row-hover transition-all duration-200">
+                                                        {tableData.columns.map(c => (
+                                                            <td key={c} className="px-5 py-3 text-slate-600 font-medium">{row[c]}</td>
+                                                        ))}
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </TableCard>
+                                );
+                            })}
+                        </div>
+                    );
+                }
+                
+                // For other steps, show a "Working Data" simulation
+                const firstTable = Object.values(customTables || {})[0] || { columns: [], rows: [] };
+                
+                return (
+                     <TableCard title={`Simulated Result: ${stepType}`} headerRight={<span className="text-xs font-bold px-2 py-1 bg-amber-50 text-amber-600 rounded-md border border-amber-100">Simulated View</span>}>
+                         <div className="p-4 bg-slate-50/50 border-b border-slate-100 mb-2">
+                            <p className="text-xs text-slate-500">
+                                <strong>Note:</strong> Since this is a browser-only simulation, we cannot execute the actual logic (e.g., "{currentStep.clauseText}"). 
+                                Below is a simulated view of the data flow.
+                            </p>
+                         </div>
+                        <table className="w-full text-sm text-left border-collapse">
+                            <thead className="text-xs text-slate-400 font-bold uppercase bg-slate-50/80 sticky top-0 z-10 backdrop-blur border-b border-slate-100">
+                                <tr>
+                                    {firstTable.columns.map(c => <th key={c} className="px-6 py-4">{c}</th>)}
+                                    <th className="px-6 py-4 text-right">Simulated Status</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-50">
+                                {firstTable.rows.map((row, i) => (
+                                    <tr key={i} className="table-row-hover">
+                                        {firstTable.columns.map(c => (
+                                            <td key={c} className="px-6 py-4 text-slate-600">{row[c]}</td>
+                                        ))}
+                                        <td className="px-6 py-4 text-right">
+                                            <StatusBadge type={i % 3 === 0 ? 'removed' : 'active'} />
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </TableCard>
+                );
+            }
+
+            // --- Demo Visualization Logic ---
+            
             const joinedData = useMemo(() => {
                 return employees.map(e => {
                     const dept = departments.find(d => d.id === e.dept_id);
@@ -314,22 +395,20 @@
                 }));
             }, [joinedData]);
 
-            // --- Views ---
-
             if (stepId === 'init') {
                 return (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 h-full">
                         <TableCard title="Employees Table">
                             <table className="w-full text-sm text-left">
-                                <thead className="text-xs text-slate-500 uppercase bg-slate-900/30">
-                                    <tr><th className="px-4 py-3">Name</th><th className="px-4 py-3">Dept_ID</th><th className="px-4 py-3 text-right">Salary</th></tr>
+                                <thead className="text-xs text-slate-400 font-bold uppercase bg-slate-50/50 sticky top-0 z-10 backdrop-blur-sm">
+                                    <tr><th className="px-5 py-3">Name</th><th className="px-5 py-3">Dept_ID</th><th className="px-5 py-3 text-right">Salary</th></tr>
                                 </thead>
-                                <tbody className="divide-y divide-slate-800/50">
+                                <tbody className="divide-y divide-slate-50">
                                     {employees.map(e => (
-                                        <tr key={e.id} className="hover:bg-slate-800/30 transition-colors">
-                                            <td className="px-4 py-2.5 font-medium text-slate-300">{e.name}</td>
-                                            <td className="px-4 py-2.5 text-slate-500 font-mono">{e.dept_id}</td>
-                                            <td className="px-4 py-2.5 text-right font-mono text-emerald-400">${e.salary}</td>
+                                        <tr key={e.id} className="table-row-hover transition-all duration-200">
+                                            <td className="px-5 py-3 font-medium text-slate-700">{e.name}</td>
+                                            <td className="px-5 py-3 text-slate-500 font-mono text-xs bg-slate-50/50 rounded mx-2">{e.dept_id}</td>
+                                            <td className="px-5 py-3 text-right font-mono text-emerald-600 font-bold">${e.salary.toLocaleString()}</td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -338,14 +417,14 @@
                         <div className="h-fit">
                             <TableCard title="Departments Table">
                                 <table className="w-full text-sm text-left">
-                                    <thead className="text-xs text-slate-500 uppercase bg-slate-900/30">
-                                        <tr><th className="px-4 py-3">ID</th><th className="px-4 py-3">Name</th></tr>
+                                    <thead className="text-xs text-slate-400 font-bold uppercase bg-slate-50/50 sticky top-0 z-10 backdrop-blur-sm">
+                                        <tr><th className="px-5 py-3">ID</th><th className="px-5 py-3">Name</th></tr>
                                     </thead>
-                                    <tbody className="divide-y divide-slate-800/50">
+                                    <tbody className="divide-y divide-slate-50">
                                         {departments.map(d => (
-                                            <tr key={d.id} className="hover:bg-slate-800/30 transition-colors">
-                                                <td className="px-4 py-2.5 text-slate-500 font-mono">{d.id}</td>
-                                                <td className="px-4 py-2.5 text-slate-300">{d.name}</td>
+                                            <tr key={d.id} className="table-row-hover transition-all duration-200">
+                                                <td className="px-5 py-3 text-slate-500 font-mono text-xs bg-slate-50/50 rounded">{d.id}</td>
+                                                <td className="px-5 py-3 text-slate-700 font-medium">{d.name}</td>
                                             </tr>
                                         ))}
                                     </tbody>
@@ -358,25 +437,27 @@
 
             if (stepId === 'from_join' || stepId === 'where') {
                 return (
-                    <TableCard title="Working Dataset" headerRight={<span className="text-xs text-slate-500">{joinedData.length} Rows</span>}>
-                        <table className="w-full text-sm text-left">
-                            <thead className="text-xs text-slate-500 uppercase bg-slate-900/30">
+                    <TableCard title="Working Dataset" headerRight={<span className="text-xs font-bold px-2.5 py-1 bg-indigo-50 text-indigo-600 rounded-full border border-indigo-100">{joinedData.length} Rows</span>}>
+                        <table className="w-full text-sm text-left border-collapse">
+                            <thead className="text-xs text-slate-400 font-bold uppercase bg-slate-50/80 sticky top-0 z-10 backdrop-blur border-b border-slate-100">
                                 <tr>
-                                    <th className="px-4 py-3">Name</th>
-                                    <th className="px-4 py-3">Dept</th>
-                                    <th className="px-4 py-3 text-right">Salary</th>
-                                    <th className="px-4 py-3 text-right">Status</th>
+                                    <th className="px-6 py-4">Name</th>
+                                    <th className="px-6 py-4">Dept</th>
+                                    <th className="px-6 py-4 text-right">Salary</th>
+                                    <th className="px-6 py-4 text-right">Status</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-slate-800/50">
+                            <tbody className="divide-y divide-slate-50">
                                 {joinedData.map(row => {
                                     const isFiltered = stepId === 'where' && row.salary <= WHERE_THRESHOLD;
                                     return (
-                                        <tr key={row.id} className={`row-animate group ${isFiltered ? 'bg-red-500/5' : 'hover:bg-slate-800/30'}`}>
-                                            <td className={`px-4 py-3 font-medium ${isFiltered ? 'text-slate-500 line-through decoration-slate-600' : 'text-slate-200'}`}>{row.name}</td>
-                                            <td className={`px-4 py-3 ${isFiltered ? 'opacity-50' : 'text-indigo-300'}`}>{row.dept_name}</td>
-                                            <td className={`px-4 py-3 text-right font-mono ${isFiltered ? 'opacity-50 text-red-400' : 'text-emerald-400'}`}>${row.salary}</td>
-                                            <td className="px-4 py-3 text-right">
+                                        <tr key={row.id} className={`row-transition group ${isFiltered ? 'bg-rose-50/30' : 'table-row-hover'}`}>
+                                            <td className={`px-6 py-4 font-medium ${isFiltered ? 'text-slate-400 line-through' : 'text-slate-700'}`}>{row.name}</td>
+                                            <td className={`px-6 py-4 ${isFiltered ? 'text-slate-400' : 'text-indigo-600'}`}>
+                                                <span className={`px-2 py-0.5 rounded text-xs font-bold ${!isFiltered && 'bg-indigo-50 border border-indigo-100'}`}>{row.dept_name}</span>
+                                            </td>
+                                            <td className={`px-6 py-4 text-right font-mono ${isFiltered ? 'text-rose-300 line-through' : 'text-emerald-600 font-bold'}`}>${row.salary.toLocaleString()}</td>
+                                            <td className="px-6 py-4 text-right">
                                                 <StatusBadge type={isFiltered ? 'removed' : 'active'} />
                                             </td>
                                         </tr>
@@ -390,39 +471,40 @@
 
             if (stepId === 'group_by' || stepId === 'having') {
                 return (
-                    <TableCard title="Grouped Data" headerRight={<span className="text-xs text-slate-500">Aggregated by Dept</span>}>
-                        <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <TableCard title="Grouped Data" headerRight={<span className="text-xs font-bold px-2.5 py-1 bg-purple-50 text-purple-600 rounded-full border border-purple-100">Aggregated by Dept</span>}>
+                        <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50/30 h-full">
                             {groupedData.map(group => {
                                 const isHavingFiltered = stepId === 'having' && group.avg <= HAVING_THRESHOLD;
                                 return (
-                                    <div key={group.name} className={`relative rounded-xl border p-4 transition-all duration-500 ${isHavingFiltered ? 'border-red-500/20 bg-red-500/5' : 'border-indigo-500/30 bg-indigo-500/5'}`}>
-                                        <div className="flex justify-between items-start mb-4">
+                                    <div key={group.name} className={`relative flex flex-col group transition-all duration-300 bg-white rounded-2xl overflow-hidden ${isHavingFiltered ? 'border border-rose-100 opacity-75' : 'gradient-border-card shadow-card hover:shadow-glow'}`}>
+                                        
+                                        <div className={`px-5 py-4 border-b ${isHavingFiltered ? 'bg-rose-50/50 border-rose-100' : 'bg-white border-slate-50'} flex justify-between items-center`}>
                                             <div>
-                                                <h4 className={`text-lg font-bold ${isHavingFiltered ? 'text-slate-500' : 'text-indigo-400'}`}>{group.name}</h4>
-                                                <div className="text-xs text-slate-500 mt-1">{group.rows.length} Employees</div>
+                                                <h4 className={`text-lg font-bold ${isHavingFiltered ? 'text-slate-500 line-through' : 'text-gradient'}`}>{group.name}</h4>
+                                                <span className="text-xs font-medium text-slate-400">{group.rows.length} Employees</span>
                                             </div>
                                             <div className="text-right">
-                                                <div className="text-[10px] uppercase text-slate-500 font-bold tracking-wider">Avg Salary</div>
-                                                <div className={`text-xl font-mono font-bold ${isHavingFiltered ? 'text-red-400 line-through decoration-red-500/50' : 'text-emerald-400'}`}>
-                                                    ${Math.round(group.avg)}
+                                                <div className="text-[10px] uppercase text-slate-400 font-bold tracking-wider mb-0.5">Avg Salary</div>
+                                                <div className={`text-xl font-mono font-bold ${isHavingFiltered ? 'text-rose-400 line-through' : 'text-emerald-500'}`}>
+                                                    ${Math.round(group.avg).toLocaleString()}
                                                 </div>
                                             </div>
                                         </div>
                                         
-                                        <div className="space-y-1.5 bg-slate-900/50 rounded-lg p-2.5">
+                                        <div className="p-4 space-y-2 bg-white flex-1">
                                             {group.rows.map(r => (
-                                                <div key={r.id} className="flex justify-between text-xs px-1">
-                                                    <span className="text-slate-400">{r.name}</span>
-                                                    <span className="text-slate-500 font-mono">${r.salary}</span>
+                                                <div key={r.id} className="flex justify-between items-center text-xs p-2.5 rounded-lg bg-slate-50/50 border border-slate-100/50">
+                                                    <span className="text-slate-600 font-medium">{r.name}</span>
+                                                    <span className="text-slate-500 font-mono">${r.salary.toLocaleString()}</span>
                                                 </div>
                                             ))}
                                         </div>
                                         
                                         {isHavingFiltered && (
-                                            <div className="absolute inset-0 flex items-center justify-center bg-slate-900/10 backdrop-blur-[1px] rounded-xl">
-                                                <span className="bg-red-500/20 text-red-400 border border-red-500/30 px-3 py-1 rounded-full text-xs font-bold shadow-lg backdrop-blur-md">
-                                                    Removed (Avg &le; {HAVING_THRESHOLD})
-                                                </span>
+                                            <div className="absolute inset-0 flex items-center justify-center bg-white/60 backdrop-blur-[1px] z-10">
+                                                <div className="transform rotate-[-3deg] bg-rose-100 text-rose-700 border border-rose-200 px-4 py-2 rounded-lg text-sm font-bold shadow-lg">
+                                                    Avg &le; {HAVING_THRESHOLD}
+                                                </div>
                                             </div>
                                         )}
                                     </div>
@@ -442,22 +524,22 @@
                 return (
                     <TableCard title="Final Result Set">
                         <table className="w-full text-sm text-left">
-                            <thead className="text-xs text-slate-500 uppercase bg-slate-900/30">
+                            <thead className="text-xs text-slate-400 font-bold uppercase bg-slate-50/80 border-b border-slate-100">
                                 <tr>
-                                    <th className="px-6 py-4">Department Name</th>
-                                    <th className="px-6 py-4 text-right">Average Salary</th>
-                                    {stepId === 'limit' && <th className="px-6 py-4 text-right">Status</th>}
+                                    <th className="px-8 py-5">Department Name</th>
+                                    <th className="px-8 py-5 text-right">Average Salary</th>
+                                    {stepId === 'limit' && <th className="px-8 py-5 text-right">Status</th>}
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-slate-800/50">
+                            <tbody className="divide-y divide-slate-50">
                                 {finalData.map((row, idx) => {
                                     const isSelected = stepId === 'limit'; 
                                     return (
-                                        <tr key={row.name} className={`row-animate ${isSelected ? 'highlight-row bg-indigo-500/5' : 'hover:bg-slate-800/30'}`}>
-                                            <td className="px-6 py-4 font-semibold text-slate-200">{row.name}</td>
-                                            <td className="px-6 py-4 text-right font-mono text-lg text-emerald-400">${Math.round(row.avg)}</td>
+                                        <tr key={row.name} className={`row-transition ${isSelected ? 'bg-indigo-50/30' : 'table-row-hover'}`}>
+                                            <td className="px-8 py-5 font-bold text-slate-700">{row.name}</td>
+                                            <td className="px-8 py-5 text-right font-mono text-xl text-emerald-600 font-bold">${Math.round(row.avg).toLocaleString()}</td>
                                             {stepId === 'limit' && (
-                                                <td className="px-6 py-4 text-right">
+                                                <td className="px-8 py-5 text-right">
                                                     <StatusBadge type="selected" />
                                                 </td>
                                             )}
@@ -467,12 +549,16 @@
                             </tbody>
                         </table>
                         
-                        <div className="p-6">
-                            <div className="flex items-start gap-3 p-4 bg-indigo-900/20 border border-indigo-500/20 rounded-lg text-sm text-indigo-200">
-                                {icons.info}
+                        <div className="p-10 bg-slate-50/50 flex-1 flex items-center justify-center">
+                            <div className="flex items-start gap-5 p-6 bg-white border border-indigo-100 shadow-glow rounded-2xl text-sm text-slate-600 max-w-2xl">
+                                <div className="p-3 bg-hero-gradient text-white rounded-xl shadow-lg shadow-indigo-500/30">
+                                    {React.cloneElement(icons.info, { className: "w-6 h-6" })}
+                                </div>
                                 <div>
-                                    <strong className="block mb-1 text-indigo-300">Transformation Complete</strong>
-                                    We started with individual employee records and transformed them into departmental aggregates, filtered by logic, and sorted by value.
+                                    <strong className="block mb-2 text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 text-lg font-extrabold">Transformation Complete</strong>
+                                    <p className="leading-relaxed text-slate-500 text-base">
+                                        The query execution is finished. We started with raw employee records, joined them with departments, filtered outliers, grouped by department, calculated averages, filtered low-performing groups, and finally sorted and limited the results.
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -483,82 +569,301 @@
         };
 
         const App = () => {
-            const [stepIdx, setStepIdx] = useState(0);
-            const currentStep = steps[stepIdx];
+            const [mode, setMode] = useState('demo');
+            const [customQuery, setCustomQuery] = useState("SELECT name, count(*) \nFROM Orders \nJOIN Users ON Users.id = Orders.user_id \nWHERE amount > 100 \nGROUP BY name \nHAVING count(*) > 5 \nORDER BY count(*) DESC \nLIMIT 10;");
+            
+            const [demoStepIdx, setDemoStepIdx] = useState(0);
+            
+            const [customSteps, setCustomSteps] = useState([]);
+            const [customStepIdx, setCustomStepIdx] = useState(0);
+            const [customLines, setCustomLines] = useState([]);
+            const [customTables, setCustomTables] = useState({});
 
-            // Keyboard navigation
+            // This line was causing issues because demoSteps wasn't defined yet in the scope
+            const currentStep = mode === 'demo' ? (demoSteps[demoStepIdx] || {}) : (customSteps[customStepIdx] || {});
+            
+            const generateMockData = (tableName) => {
+                const cols = ['id', 'name', 'created_at', 'status', 'value'];
+                const rows = Array.from({ length: 5 }).map((_, i) => ({
+                    id: i + 1,
+                    name: `${tableName}_Item_${i+1}`,
+                    created_at: `2023-01-0${i+1}`,
+                    status: i % 2 === 0 ? 'active' : 'inactive',
+                    value: Math.floor(Math.random() * 1000)
+                }));
+                return { columns: cols, rows: rows };
+            };
+
+            const handleAnalyze = () => {
+                const lines = customQuery.split('\n').map((text, id) => ({ id, text }));
+                setCustomLines(lines);
+
+                // 1. Identify Tables
+                const tableRegex = /\b(?:FROM|JOIN)\s+([a-zA-Z0-9_]+)/gi;
+                const tablesFound = new Set();
+                let tableMatch;
+                const queryStr = customQuery; 
+                while ((tableMatch = tableRegex.exec(queryStr)) !== null) {
+                    tablesFound.add(tableMatch[1]);
+                }
+                
+                const newCustomTables = {};
+                tablesFound.forEach(t => {
+                    newCustomTables[t] = generateMockData(t);
+                });
+                setCustomTables(newCustomTables);
+
+                // 2. Identify Steps
+                const regex = /\b(SELECT|FROM|JOIN|WHERE|GROUP BY|HAVING|ORDER BY|LIMIT|OFFSET|DISTINCT)\b/gi;
+                let match;
+                const foundClauses = [];
+
+                // Add an initial "Data Sources" step if tables exist
+                if (tablesFound.size > 0) {
+                     foundClauses.push({
+                        id: 'init',
+                        clause: 'init',
+                        lineIdx: [],
+                        clauseText: 'Loading Data Sources...',
+                        title: 'Data Sources',
+                        desc: `Identified ${tablesFound.size} table(s): ${Array.from(tablesFound).join(', ')}. Generating mock data for simulation.`
+                    });
+                }
+
+                while ((match = regex.exec(customQuery)) !== null) {
+                    const clause = match[0].toUpperCase();
+                    const index = match.index;
+                    let charCount = 0;
+                    let lineIdx = 0;
+                    for (let i = 0; i < lines.length; i++) {
+                        if (index < charCount + lines[i].text.length + 1) {
+                            lineIdx = i;
+                            break;
+                        }
+                        charCount += lines[i].text.length + 1;
+                    }
+
+                    const endIdx = customQuery.indexOf('\n', index);
+                    const snippet = customQuery.substring(index, endIdx === -1 ? undefined : endIdx);
+
+                    foundClauses.push({
+                        id: `custom_${foundClauses.length}`,
+                        clause: clause,
+                        lineIdx: [lineIdx],
+                        clauseText: snippet,
+                        title: clause,
+                        desc: getClauseDesc(clause)
+                    });
+                }
+
+                // Sort based on logical order, but keep 'init' first
+                foundClauses.sort((a, b) => {
+                    if (a.clause === 'init') return -1;
+                    if (b.clause === 'init') return 1;
+                    return getClauseOrder(a.clause) - getClauseOrder(b.clause);
+                });
+
+                const steps = foundClauses.map(c => ({
+                    id: c.id,
+                    title: c.title,
+                    subtitle: c.clause === 'init' ? 'Setup' : 'Execution Step',
+                    desc: c.desc,
+                    icon: getClauseIcon(c.clause === 'init' ? 'FROM' : c.clause),
+                    queryHighlight: c.lineIdx,
+                    clauseText: c.clauseText,
+                    type: 'custom'
+                }));
+
+                if (steps.length === 0) {
+                    steps.push({
+                        id: 'empty',
+                        title: 'No SQL Clauses Found',
+                        subtitle: 'Error',
+                        desc: 'Please enter a valid SQL query containing standard clauses like SELECT, FROM, WHERE, etc.',
+                        icon: icons.info,
+                        queryHighlight: [],
+                        clauseText: '',
+                        type: 'custom'
+                    });
+                }
+
+                setCustomSteps(steps);
+                setCustomStepIdx(0);
+            };
+
             useEffect(() => {
-                const handleKeyDown = (e) => {
-                    if (e.key === 'ArrowRight') setStepIdx(prev => Math.min(steps.length - 1, prev + 1));
-                    if (e.key === 'ArrowLeft') setStepIdx(prev => Math.max(0, prev - 1));
-                };
-                window.addEventListener('keydown', handleKeyDown);
-                return () => window.removeEventListener('keydown', handleKeyDown);
-            }, []);
+                if (mode === 'custom') handleAnalyze();
+            }, [mode]);
+
+            const nextStep = () => {
+                if (mode === 'demo') {
+                    setDemoStepIdx(prev => Math.min(demoSteps.length - 1, prev + 1));
+                } else {
+                    setCustomStepIdx(prev => Math.min(customSteps.length - 1, prev + 1));
+                }
+            };
+
+            const prevStep = () => {
+                if (mode === 'demo') {
+                    setDemoStepIdx(prev => Math.max(0, prev - 1));
+                } else {
+                    setCustomStepIdx(prev => Math.max(0, prev - 1));
+                }
+            };
+
+            const stepsLength = mode === 'demo' ? demoSteps.length : customSteps.length;
+            const currentIdx = mode === 'demo' ? demoStepIdx : customStepIdx;
 
             return (
-                <div className="max-w-7xl mx-auto p-4 lg:p-8 min-h-screen flex flex-col font-sans">
-                    {/* Top Header */}
-                    <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <div>
-                            <h1 className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-indigo-300 mb-2">
-                                SQL Execution Order
-                            </h1>
-                            <p className="text-slate-400 text-sm">Interactive visualization of aggregation, filtering, and sorting logic.</p>
-                        </div>
-                        <div className="flex gap-2">
-                            <button 
-                                onClick={() => setStepIdx(Math.max(0, stepIdx - 1))}
-                                disabled={stepIdx === 0}
-                                className="group flex items-center gap-2 px-5 py-2.5 rounded-full bg-slate-800 hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all border border-slate-700"
-                            >
-                                {icons.chevronLeft} <span className="hidden sm:inline font-medium">Previous</span>
-                            </button>
-                            <button 
-                                onClick={() => setStepIdx(Math.min(steps.length - 1, stepIdx + 1))}
-                                disabled={stepIdx === steps.length - 1}
-                                className="group flex items-center gap-2 px-5 py-2.5 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-indigo-900/20"
-                            >
-                                <span className="hidden sm:inline font-medium">Next Step</span> {icons.chevronRight}
-                            </button>
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1 items-start">
-                        
-                        {/* LEFT COLUMN: Controls & Explanation */}
-                        <div className="lg:col-span-4 flex flex-col gap-6 sticky top-6">
+                <div className="max-w-[1600px] mx-auto p-4 lg:p-8 flex-1 flex flex-col font-sans text-slate-900 w-full">
+                    {/* Header */}
+                    <header className="mb-8 pb-6 border-b border-slate-200">
+                        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                            <div>
+                                <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-2 text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 animate-gradient">
+                                    SQL Execution Order
+                                </h1>
+                                <p className="text-slate-500 font-medium text-lg">Visualizing the logical flow of SQL queries.</p>
+                            </div>
                             
-                            <div className="glass-panel p-6 rounded-2xl">
-                                <StepIndicator currentIdx={stepIdx} total={steps.length} />
-                                
-                                <div className="mb-6 animate-in slide-in-from-left-4 fade-in duration-300" key={currentStep.id}>
-                                    <div className="flex items-center gap-3 mb-2 text-indigo-400">
-                                        <div className="p-2 bg-indigo-500/10 rounded-lg border border-indigo-500/20">
-                                            {currentStep.icon}
-                                        </div>
-                                        <div>
-                                            <span className="text-xs font-bold text-indigo-500 uppercase tracking-wider">{currentStep.subtitle}</span>
-                                            <h2 className="text-2xl font-bold text-slate-100">{currentStep.title}</h2>
-                                        </div>
-                                    </div>
-                                    <p className="text-slate-400 leading-relaxed text-sm mt-4 pl-1 border-l-2 border-slate-700">
-                                        {currentStep.desc}
-                                    </p>
+                            <div className="bg-slate-100/50 p-1.5 rounded-xl flex gap-1 border border-slate-200">
+                                <button 
+                                    onClick={() => setMode('demo')}
+                                    className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all duration-300 ${mode === 'demo' ? 'bg-white text-indigo-600 shadow-md scale-[1.02]' : 'text-slate-500 hover:text-slate-700 hover:bg-white/50'}`}
+                                >
+                                    Demo Mode
+                                </button>
+                                <button 
+                                    onClick={() => setMode('custom')}
+                                    className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all duration-300 ${mode === 'custom' ? 'bg-white text-indigo-600 shadow-md scale-[1.02]' : 'text-slate-500 hover:text-slate-700 hover:bg-white/50'}`}
+                                >
+                                    Custom Query
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className="mt-8 flex items-center justify-between">
+                             <div className="flex items-center gap-3">
+                                 <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+                                 <div className="text-sm font-bold text-slate-400 uppercase tracking-widest">
+                                    {mode === 'demo' ? 'Employee Salary Scenario' : 'Custom Query Analyzer'}
+                                 </div>
+                             </div>
+                             
+                             <div className="flex items-center gap-4 bg-white p-1.5 rounded-full shadow-card border border-slate-100">
+                                <button 
+                                    onClick={prevStep}
+                                    disabled={currentIdx === 0}
+                                    className="group flex items-center gap-2 px-6 py-3 rounded-full bg-transparent hover:bg-slate-50 disabled:opacity-30 disabled:hover:bg-transparent transition-all text-slate-600 font-bold"
+                                >
+                                    {React.cloneElement(icons.chevronLeft, { className: "w-5 h-5 group-hover:-translate-x-1 transition-transform" })}
+                                    <span className="hidden sm:inline">Previous</span>
+                                </button>
+                                <div className="w-px h-6 bg-slate-200"></div>
+                                <button 
+                                    onClick={nextStep}
+                                    disabled={currentIdx === stepsLength - 1}
+                                    className="group flex items-center gap-2 px-6 py-3 rounded-full bg-hero-gradient hover:opacity-90 text-white disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-indigo-500/30 font-bold"
+                                >
+                                    <span className="hidden sm:inline">Next Step</span>
+                                    {React.cloneElement(icons.chevronRight, { className: "w-5 h-5 group-hover:translate-x-1 transition-transform" })}
+                                </button>
+                            </div>
+                        </div>
+                    </header>
+
+                    {mode === 'custom' && (
+                        <div className="mb-10 grid grid-cols-1 md:grid-cols-[1fr,auto] gap-6 items-stretch animate-enter">
+                            <div className="relative group">
+                                <div className="absolute -inset-0.5 bg-hero-gradient rounded-2xl opacity-20 group-hover:opacity-40 transition duration-500 blur"></div>
+                                <div className="relative bg-white rounded-xl h-full">
+                                    <textarea
+                                        value={customQuery}
+                                        onChange={(e) => setCustomQuery(e.target.value)}
+                                        className="w-full h-40 p-6 rounded-xl border border-transparent font-mono text-sm bg-white focus:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-100 transition-all resize-none text-slate-700 shadow-inner"
+                                        placeholder="Enter your SQL query here..."
+                                    />
+                                    <div className="absolute top-4 right-4 text-[10px] font-bold text-indigo-400 bg-indigo-50 px-2 py-1 rounded-md border border-indigo-100">EDITABLE</div>
                                 </div>
                             </div>
+                            <button 
+                                onClick={handleAnalyze}
+                                className="px-10 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold shadow-xl shadow-slate-900/20 transition-all hover:scale-[1.02] active:scale-[0.98] flex flex-col items-center justify-center gap-3 border border-slate-700"
+                            >
+                                <div className="p-3 bg-white/10 rounded-full">{icons.play}</div>
+                                <span>Analyze</span>
+                            </button>
+                        </div>
+                    )}
 
-                            <div className="h-[400px]">
-                                <CodeDisplay activeLines={currentStep.queryHighlight} />
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 flex-1 items-start">
+                        
+                        {/* LEFT: Info & Code */}
+                        <div className="lg:col-span-4 flex flex-col gap-6 sticky top-8">
+                            
+                            <div className="gradient-border-card p-8 shadow-card relative overflow-hidden min-h-[240px]">
+                                {currentStep.icon && (
+                                    <div className="absolute -top-6 -right-6 p-4 opacity-[0.03] text-indigo-600 transform rotate-12">
+                                         {React.cloneElement(currentStep.icon, { className: "w-48 h-48" })}
+                                    </div>
+                                )}
+
+                                <StepIndicator currentIdx={currentIdx} total={stepsLength} />
+                                
+                                {currentStep.id && (
+                                    <div className="animate-enter relative z-10" key={currentStep.id}>
+                                        <div className="flex items-center gap-4 mb-6">
+                                            <div className="p-3.5 bg-gradient-to-br from-white to-slate-50 rounded-2xl border border-slate-100 shadow-card text-indigo-600">
+                                                {React.cloneElement(currentStep.icon, { className: "w-8 h-8" })}
+                                            </div>
+                                            <div>
+                                                <span className="text-xs font-bold text-indigo-500 uppercase tracking-widest block mb-1">{currentStep.subtitle}</span>
+                                                <h2 className="text-3xl font-black text-slate-900 leading-none tracking-tight">{currentStep.title}</h2>
+                                            </div>
+                                        </div>
+                                        <p className="text-slate-600 leading-relaxed text-base font-medium">
+                                            {currentStep.desc}
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="h-[500px]">
+                                <CodeDisplay 
+                                    lines={mode === 'demo' ? [
+                                        { id: 0, text: "SELECT D.name, AVG(E.salary) as avg_sal" },
+                                        { id: 1, text: "FROM Employees E" },
+                                        { id: 2, text: "JOIN Departments D" },
+                                        { id: 3, text: "  ON E.dept_id = D.id" },
+                                        { id: 4, text: `WHERE E.salary > ${WHERE_THRESHOLD}` },
+                                        { id: 5, text: "GROUP BY D.name" },
+                                        { id: 6, text: `HAVING AVG(E.salary) > ${HAVING_THRESHOLD}` },
+                                        { id: 7, text: "ORDER BY avg_sal DESC" },
+                                        { id: 8, text: "LIMIT 2 OFFSET 0;" }
+                                    ] : customLines}
+                                    activeLines={currentStep.queryHighlight || []} 
+                                    isCustom={mode === 'custom'}
+                                />
                             </div>
                         </div>
 
-                        {/* RIGHT COLUMN: Visualization */}
-                        <div className="lg:col-span-8 h-full min-h-[500px]">
-                             <DataVisualizer stepId={currentStep.id} />
+                        {/* RIGHT: Visualizer */}
+                        <div className="lg:col-span-8 h-full min-h-[600px]">
+                             <DataVisualizer 
+                                stepId={currentStep.id} 
+                                isCustom={mode === 'custom'} 
+                                currentStep={currentStep}
+                                customTables={customTables}
+                             />
                         </div>
 
                     </div>
+                    
+                    <footer className="mt-20 py-8 border-t border-slate-200 text-center">
+                        <p className="text-slate-400 text-sm font-semibold tracking-wide">
+                            Created and All Rights Reserved to <span className="text-indigo-600 font-bold hover:text-purple-600 transition-colors cursor-default">Punitkumar Harsur</span>
+                        </p>
+                    </footer>
                 </div>
             );
         };
